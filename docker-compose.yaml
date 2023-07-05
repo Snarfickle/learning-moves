@@ -1,0 +1,44 @@
+volumes:
+  learning-data:
+    external: true
+
+services:
+  db:
+    image: postgres:14.5-bullseye
+    environment:
+      POSTGRES_PASSWORD: bluesky4home
+      POSTGRES_USER: bluesky
+      POSTGRES_DB: backend
+    ports:
+      - "15432:5432"
+    volumes:
+      - learning-data:/var/lib/postgresql/data
+  
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: ./Dockerfile.dev
+    environment:
+      DATABASE_URL: postgresql://bluesky:bluesky4home@db/backend
+      WAIT_HOSTS: db:5432
+      PORT: 8000
+      SIGNING_KEY: yayforfakesigningkey
+    ports:
+      - 8000:80
+    volumes:
+      - ./backend:/app
+  
+  ghi:
+    image: node:lts-bullseye
+    command: /bin/bash run.sh
+    working_dir: /app
+    volumes:
+      - ./ghi:/app
+    ports:
+      - "3000:3000"
+    environment:
+      HOST_OS: ${OS}
+      NODE_ENV: development
+      HOST: "0.0.0.0"
+      PUBLIC_URL: http://localhost:3000
+      REACT_APP_HOST: http://localhost:8000
