@@ -17,6 +17,7 @@ class ProfileIn(BaseModel):
     account_id: int
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+    email: Optional[EmailStr] = None
     type: Optional[str] = None
     phone_number: Optional[str] = None
     city: Optional[str] = None

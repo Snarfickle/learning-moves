@@ -1,62 +1,61 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Union, List, Dict
-from queries.profile import Error, ProfileIn, ProfileOut, ProfileRepo
+from queries.resources import Error, ResourceIn, ResourceOut, ResourceRepo
 from authenticator import authenticator
 
 router = APIRouter()
 
-@router.post("/profiles", response_model=ProfileOut)
-def create_profile(
-    profile: ProfileIn,
-    repo: ProfileRepo = Depends(ProfileRepo),
+@router.post("/resources", response_model=ResourceOut)
+def create_resource(
+    resource: ResourceIn,
+    repo: ResourceRepo = Depends(ResourceRepo),
     account_data: Dict = Depends(authenticator.get_current_account_data),
 ):
-    result = repo.create_profile(profile)
+    result = repo.create_resource(resource)
     if isinstance(result, Error):
         raise HTTPException(status_code=400, detail=result.dict())
     return result
 
-@router.get("/profiles/{profile_id}", response_model=ProfileOut)
-def get_one_profile(
-    profile_id: int,
-    repo: ProfileRepo = Depends(ProfileRepo),
+@router.get("/resources/{resource_id}", response_model=ResourceOut)
+def get_one_resource(
+    resource_id: int,
+    repo: ResourceRepo = Depends(ResourceRepo),
     account_data: Dict = Depends(authenticator.get_current_account_data),
 ):
-    result = repo.get_one(profile_id)
+    result = repo.get_one(resource_id)
     if isinstance(result, Error):
         raise HTTPException(status_code=404, detail=result.dict())
     return result
 
-@router.put("/profiles/{profile_id}", response_model=ProfileOut)
-def update_profile(
-    profile_id: int,
-    profile: ProfileIn,
-    repo: ProfileRepo = Depends(ProfileRepo),
+@router.put("/resources/{resource_id}", response_model=ResourceOut)
+def update_resource(
+    resource_id: int,
+    resource: ResourceIn,
+    repo: ResourceRepo = Depends(ResourceRepo),
     account_data: Dict = Depends(authenticator.get_current_account_data),
 ):
-    print("hello!")
-    result = repo.update_profile(profile_id, profile)
+    result = repo.update_resource(resource_id, resource)
     if isinstance(result, Error):
         raise HTTPException(status_code=400, detail=result.dict())
     return result
 
-@router.delete("/profiles/{profile_id}", response_model=Dict)
-def delete_profile(
-    profile_id: int,
-    repo: ProfileRepo = Depends(ProfileRepo),
+@router.delete("/resources/{resource_id}", response_model=Dict)
+def delete_resource(
+    resource_id: int,
+    repo: ResourceRepo = Depends(ResourceRepo),
     account_data: Dict = Depends(authenticator.get_current_account_data),
 ):
-    result = repo.delete_profile(profile_id)
+    result = repo.delete_resource(resource_id)
     if isinstance(result, Error):
         raise HTTPException(status_code=404, detail=result.dict())
     return result
 
-@router.get("/profiles", response_model=List[ProfileOut])
-def get_all_profiles(
-    repo: ProfileRepo = Depends(ProfileRepo), 
+@router.get("/resources", response_model=List[ResourceOut])
+def get_all_resources(
+    repo: ResourceRepo = Depends(ResourceRepo), 
     account_data: Dict = Depends(authenticator.get_current_account_data),
 ):
-    result = repo.get_all_profiles()
+    result = repo.get_all_resources()
     if isinstance(result, Error):
         raise HTTPException(status_code=400, detail=result.dict())
     return result

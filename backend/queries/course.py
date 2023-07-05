@@ -3,6 +3,9 @@ from typing import Optional, List, Union
 from queries.pool import pool
 from psycopg.rows import dict_row
 
+class Error(BaseModel):
+    message: str
+    picture: Optional[str]
 
 class CourseIn(BaseModel):
     title: str
