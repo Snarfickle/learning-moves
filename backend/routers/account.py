@@ -5,18 +5,16 @@ from fastapi import (
     status, 
     Response, 
     Request)
-from typing import Union
+from typing import Union, List, Dict
 from pydantic import BaseModel
 from jwtdown_fastapi.authentication import Token
 from authenticator import authenticator
 from queries.account import ( 
     AccountIn, 
     AccountOut, 
-    AccountRepo)
-from queries.profile import (
-    ProfileOut,
-    ProfileRepo
+    AccountRepo,
 )
+
 
 class AccountForm(BaseModel):
     username: str
@@ -45,7 +43,6 @@ async def create_account(
     try:
         account_info.password = hashed_password
         account = accountsRepo.create_account(account_info)
-        print("Account under router create: ", account)
     except Exception as e:
         print("error:", e)
         raise HTTPException(
@@ -56,17 +53,20 @@ async def create_account(
     token = await authenticator.login(response, request, form, accountsRepo)
     return AccountToken(account=account['account'], **token.dict())
 
-@router.get("/token", response_model=Union[AccountToken, None])
-async def get_token(
+@router.get("/accounts/", response_model=Union[AccountToken, None])
+async def get_account_info(
     request: Request,
     account: AccountOut = Depends(authenticator.try_get_current_account_data),
     profileRepo: AccountRepo = Depends(),
+    account_data: Dict = Depends(authenticator.get_current_account_data),
 ) -> Union[AccountToken, None]:
     if account and authenticator.cookie_name in request.cookies:
-        print(account)
-        accountFromDB = profileRepo.get_one(account["id"])
-        return {
-            "access_token": request.cookies[authenticator.cookie_name],
-            "type": "Bearer",
-            "account": accountFromDB,
-        }
+        accountFromDB = await profileRepo.get_account(account["id"])        
+        access_token = request.cookies.get(authenticator.cookie_name)
+        return AccountToken(account=accountFromDB, access_token=access_token)
+    else:
+        print("account: ", account)
+        print("request: ", request)
+        print("authenticator.cookie_name: ", authenticator.cookie_name)
+        print("request.cookies: ", request.cookies)
+        print("unable to provide the account data") 

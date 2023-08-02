@@ -23,15 +23,11 @@ class AccountOutWithPassword(AccountOut):
 
 class AccountRepo:
     def create_account(self, account: AccountIn) -> Union[AccountOut, Error]:
-        print("setting up connection...   ")
         try:
             with pool.connection() as conn:
-                print("1 ...")
                 # Turn off auto commit to start a transaction block
                 conn.autocommit = False
-                print("2 ...")
                 with conn.cursor(row_factory=dict_row) as db:
-                    print("3 ...")
                     db.execute(
                         """
                         INSERT INTO accounts (username, email, password)
@@ -41,7 +37,6 @@ class AccountRepo:
                         [account.username, account.email, account.password]
                     )
                     account_record = db.fetchone()
-                    print("account_record: ", account_record)
 
                     # Create a new profile linked to the new account
                     db.execute(
@@ -53,10 +48,10 @@ class AccountRepo:
                         [account_record['id'], account.email]
                     )
                     profile_record = db.fetchone()
-                    print("profile_record: ", profile_record)
+
                     # If no errors occurred, commit the transaction
                     conn.commit()
-                    print("creating account and profile...    ")
+
                     # Return both the account and profile information
                     return {
                         'account': AccountOut(**account_record),
@@ -65,7 +60,6 @@ class AccountRepo:
         except Exception as error:
             # If an error occurred, rollback the transaction
             conn.rollback()
-            print("connection broke here...   ")
             print(error)
             return Error(message="Unable to create account in database")
         finally:
@@ -115,6 +109,14 @@ class AccountRepo:
         except Exception as error:
             print(error)
             return Error(message="Unable to get account username from database")
+    
+    async def authenticate_user(self, username: str, password: str) -> Union[AccountOutWithPassword, Error]:
+        account = await self.get_account_by_username(username)
+        if isinstance(account, Error):
+            return account
+        if account.password != password:
+            return Error(message="Incorrect password")
+        return account
 
     def update_account(self, account_id: int, account: AccountIn) -> Union[AccountOut, Error]:
         pass

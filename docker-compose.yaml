@@ -22,7 +22,7 @@ services:
       DATABASE_URL: postgresql://bluesky:bluesky4home@db/backend
       WAIT_HOSTS: db:5432
       PORT: 8000
-      SIGNING_KEY: yayforfakesigningkey
+      SIGNING_KEY: eyJhbGciOiJSU0EtT0FFUCIsImVudGl0bGVtZW50Ijp0cnVlLCJlbmMiOiJBMjU2Q0JDLUhTNTEyIn0.sG1PwsejnpnxZKlLtFMHU4fzVf2VKp2xdHzILPoUw6GlKOorSvdi2dLgBS_M8CIyVbwRUkPszcfrJwdeY0DlLSyBRzASpR_BT_X9gi9cb0ybCIThjMNPOHpzEraiLLNMTFsfrjD-9GEabHTV3mfrMF9q__cshEtymmyHMzGS4N-TW5I6ejn0zbdHcizuIPeB6tXBycjh_nAI46DALVOH6AhP8IDEcECEdrsbUAEv60aSsvxGDM7ztJvfouP5WjUtM3X7uxkbaz8c-wDe88i9HYExXQunfzg7FptuxbNtVd6U8DFLR0IzipmQVUIN6df67WW8G56Z_u67EV_aCQqpZw.j6SOWYrdnc2gRiyVhDEqgg.rLW0LqF6T1zWQEbN200-k9q-7cbXjdRQgwsGD86aLHDt1iG8WqXtoD4oZtvTyTZJgrj0cHb2icRFGgvSugnMAW0gX0tvuo1-IWWLW5i8b91lw13cmStUEhOHog1kZA_Q.Bs7WZ--ugaDdUKiOri_2jC1VVNWkpRjbJr2TnYYh-1k
     ports:
       - 8000:80
     volumes:

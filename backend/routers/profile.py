@@ -27,14 +27,13 @@ def get_one_profile(
         raise HTTPException(status_code=404, detail=result.dict())
     return result
 
-@router.put("/profiles/{profile_id}", response_model=ProfileOut)
+@router.put("/profiles/edit/{profile_id}", response_model=ProfileOut)
 def update_profile(
     profile_id: int,
     profile: ProfileIn,
     repo: ProfileRepo = Depends(ProfileRepo),
     account_data: Dict = Depends(authenticator.get_current_account_data),
 ):
-    print("hello!")
     result = repo.update_profile(profile_id, profile)
     if isinstance(result, Error):
         raise HTTPException(status_code=400, detail=result.dict())
